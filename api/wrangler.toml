@@ -1,0 +1,19 @@
+name = "rumpusroom-api"
+main = "src/index.ts"
+compatibility_date = "2025-04-01"
+
+[vars]
+APP_BASE_URL = "https://rumpusroom.app"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "rumpusroom"
+database_id = "local-dev-placeholder"
+migrations_dir = "migrations"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "local-dev-placeholder"
+
+# SESSION_SECRET is provided via .dev.vars locally and `wrangler secret put`
+# in production. Do not commit a real secret here.
