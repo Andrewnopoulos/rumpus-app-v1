@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RumpusRoom auth-client — IIFE example</title>
+  </head>
+  <body>
+    <h1>RumpusRoom auth-client (IIFE)</h1>
+    <p>Open the console to see the session state.</p>
+
+    <!--
+      Local testing (default): build the library first (`npm run build`), then
+      open this file. It loads the freshly built IIFE bundle from ../dist.
+
+      In production, load the published bundle from the CDN instead — swap the
+      active <script> for the commented one below:
+      <script src="https://cdn.rumpusroom.app/auth-client/v1/index.global.js"></script>
+    -->
+    <script src="../dist/index.global.js"></script>
+
+    <script>
+      // The IIFE build exposes window.RumpusRoom = { RumpusClient }.
+      // Pass apiBase when testing against a local API (default is
+      // https://api.rumpusroom.app).
+      const rumpus = new RumpusRoom.RumpusClient({
+        appSlug: "kaleidoscope-camera",
+        // apiBase: "http://localhost:8787",
+      });
+
+      rumpus
+        .getSession()
+        .then((session) => {
+          console.log("session:", session);
+          console.log("app unlocked:", rumpus.isAppUnlocked());
+          console.log("current profile:", rumpus.currentProfile());
+
+          if (!session.authenticated) {
+            // rumpus.redirectToLauncher("unauthenticated");
+          } else if (!rumpus.isAppUnlocked()) {
+            // rumpus.redirectToLauncher("locked");
+          }
+        })
+        .catch((err) => console.error("getSession failed:", err));
+
+      rumpus.on("session-expired", () => {
+        console.warn("session expired — would redirect to launcher");
+      });
+    </script>
+  </body>
+</html>
