@@ -37,7 +37,7 @@ export async function elevate(c: Ctx): Promise<Response> {
     .first<ParentEmailRow>();
 
   if (parent) {
-    const link = `${c.env.APP_BASE_URL}/auth/consume?token=${token}`;
+    const link = `${c.env.API_BASE_URL}/auth/consume?token=${token}`;
     await sendEmail({
       to: parent.email,
       subject: "Confirm it's you — RumpusRoom",

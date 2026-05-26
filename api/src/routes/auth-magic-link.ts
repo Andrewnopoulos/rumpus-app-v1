@@ -93,7 +93,7 @@ export async function magicLink(c: Ctx): Promise<Response> {
     .bind(ulid(), parent.id, tokenHash, now, now + MAGIC_LINK_TTL)
     .run();
 
-  const link = `${c.env.APP_BASE_URL}/auth/consume?token=${token}`;
+  const link = `${c.env.API_BASE_URL}/auth/consume?token=${token}`;
   await sendEmail({
     to: email,
     subject: "Your RumpusRoom sign-in link",

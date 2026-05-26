@@ -70,7 +70,7 @@ Append-only. One line of rationale per decision.
 - Auth client cache model is fresh-or-cache-on-failure, not stale-while-
   revalidate. Past TTL blocks on fresh fetch; cache only serves on
   network failure. Right for security/billing boundary; flag misnamed
-  in initial build and to be renamed `allowStaleFallback`.
+  in initial build and renamed `allowStaleFallback`.
 - No cross-tab or real-time entitlement updates in v1. Kid PWAs run on
   different devices from the parent dashboard, so storage events don't
   apply. Changes propagate on next /me fetch (app launch or after TTL).
@@ -114,3 +114,13 @@ Append-only. One line of rationale per decision.
 - Entitlement filtering is client-side in the app grid: the launcher renders
   the static app catalogue filtered by /me's apps_unlocked. Server stays the
   source of truth; the catalogue (names, icons, launch URLs) is launcher data.
+- Split the API's single APP_BASE_URL into two env vars: API_BASE_URL (origin
+  the magic-link /auth/consume link points at) and LAUNCHER_BASE_URL (post-
+  consume redirect target). One var couldn't serve both once launcher and API
+  are different prod subdomains. Two vars over forwarding the redirect target
+  through the consume flow: clearer mental model (API URL → API, launcher URL →
+  launcher), the launcher needn't know anything about token routing, and it
+  future-proofs a non-root launcher (e.g. app.rumpusroom.app). In dev both
+  point at the launcher origin (the Vite proxy keeps one origin). Resolves the
+  "production auth redirect coupling" open question; prerequisite for the
+  Stripe/deployment session.

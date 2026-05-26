@@ -68,10 +68,11 @@ So the magic-link link, consume redirect, cookie, and all API calls stay on
 
 **Production** is genuinely cross-origin (`rumpusroom.app` ↔ `api.rumpusroom.app`),
 so the API ships proper CORS (credentialed, origin-reflected). Set
-`VITE_API_BASE=https://api.rumpusroom.app` for production builds. Note: the API's
-`APP_BASE_URL`/consume coupling still needs a deployment decision (the consume
-link must resolve to the API while redirecting back to the launcher) — flagged
-for the API owner; out of scope for this v0.
+`VITE_API_BASE=https://api.rumpusroom.app` for production builds. The API now
+uses two env vars for the sign-in round trip: `API_BASE_URL`
+(`https://api.rumpusroom.app`, where the magic-link consume link resolves) and
+`LAUNCHER_BASE_URL` (`https://rumpusroom.app`, the post-consume redirect target).
+In dev both point at the launcher origin so the proxy keeps everything on one origin.
 
 ## Styling
 

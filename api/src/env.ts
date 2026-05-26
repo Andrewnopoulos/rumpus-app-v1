@@ -1,5 +1,6 @@
 // Worker environment bindings. Configured in wrangler.toml (DB, SESSIONS,
-// APP_BASE_URL) and as a secret / .dev.vars value (SESSION_SECRET).
+// API_BASE_URL, LAUNCHER_BASE_URL) and as a secret / .dev.vars value
+// (SESSION_SECRET).
 
 export interface Env {
   /** D1 database — durable relational store. */
@@ -8,6 +9,8 @@ export interface Env {
   SESSIONS: KVNamespace;
   /** HMAC secret used to sign the session cookie. */
   SESSION_SECRET: string;
-  /** Base URL used in magic-link emails and post-consume redirects. */
-  APP_BASE_URL: string;
+  /** Origin of this API; the `/auth/consume` link in magic-link emails. */
+  API_BASE_URL: string;
+  /** Origin of the launcher; the post-consume redirect target. */
+  LAUNCHER_BASE_URL: string;
 }

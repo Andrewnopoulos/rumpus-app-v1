@@ -16,16 +16,14 @@ Nothing in active flight. The launcher build wrapped; remaining work is either d
 
 ### Next up
 
-Pilot the auth-client retrofit on Kaleidoscope camera — App-catalogue.md flags it as the simplest candidate, and it proves the cross-subdomain session before the harder apps. Separately, resolve the production `APP_BASE_URL` split (below) before any deploy.
+Pilot the auth-client retrofit on Kaleidoscope camera — App-catalogue.md flags it as the simplest candidate, and it proves the cross-subdomain session before the harder apps.
 
 ### Known issues / debts
 
-- Production `APP_BASE_URL` reuse: one env var serves both the magic-link consume URL and the post-consume redirect. A dev Vite proxy hides this on one origin; production needs the consume link on the API and the redirect on the launcher. Needs a deployment decision (two env vars, or fronting `/auth/consume` on the launcher).
 - Email is a console stub; no real provider (Resend/Postmark) is wired.
 - No Stripe integration exists beyond the schema tables — checkout, webhooks, and metering are absent.
 - Parent dashboard shows static placeholders: pricing `$11.50/mo` and the Mr Know-it-all quota are hardcoded, and Edit / sensitive-action buttons are toast stubs.
 - 12 avatars are designed (ids 0–11) but the API reserves 0–19; the launcher falls back to Fox for unknown ids.
-- Decision-log notes the auth-client cache flag "to be renamed `allowStaleFallback`" as pending; the rename has actually shipped and the old name is gone.
 
 ### Last touched
 

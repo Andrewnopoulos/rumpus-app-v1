@@ -15,9 +15,9 @@ interface TokenRow {
   purpose: string;
 }
 
-/** Redirect to the app root, attaching the given Set-Cookie if present. */
+/** Redirect to the launcher root, attaching the given Set-Cookie if present. */
 function redirectToApp(c: Ctx, setCookie?: string): Response {
-  const headers = new Headers({ Location: `${c.env.APP_BASE_URL}/` });
+  const headers = new Headers({ Location: `${c.env.LAUNCHER_BASE_URL}/` });
   if (setCookie) headers.append("Set-Cookie", setCookie);
   return new Response(null, { status: 302, headers });
 }

@@ -3,7 +3,10 @@ main = "src/index.ts"
 compatibility_date = "2025-04-01"
 
 [vars]
-APP_BASE_URL = "https://rumpusroom.app"
+# Origin of this API — used to build the /auth/consume link in emails.
+API_BASE_URL = "https://api.rumpusroom.app"
+# Origin of the launcher — the post-consume redirect target.
+LAUNCHER_BASE_URL = "https://rumpusroom.app"
 
 [[d1_databases]]
 binding = "DB"
