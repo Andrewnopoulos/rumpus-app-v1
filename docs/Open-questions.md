@@ -30,6 +30,9 @@ decisions.md.
 - Analytics stack: Cloudflare Web Analytics + something product-level
   (PostHog?) + Sentry for errors. Confirm before launch.
 - Status page approach if Cloudflare itself has an outage.
+- Confirm domain layout: launcher at rumpusroom.app root vs
+  app.rumpusroom.app subdomain. Affects DNS, marketing site location,
+  cookie scope verification.
 
 ## Strategic / later
 - When (not whether) to publicly open app requests from subscribers.
@@ -40,3 +43,4 @@ decisions.md.
 - Real-time entitlement push (SSE or long-polling) for sub-60s
   propagation of cancellation, refunds, etc. across devices. Add if
   evidence of need; not a v1 concern.
+  

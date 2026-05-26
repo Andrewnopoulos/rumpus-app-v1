@@ -74,3 +74,13 @@ Append-only. One line of rationale per decision.
 - No cross-tab or real-time entitlement updates in v1. Kid PWAs run on
   different devices from the parent dashboard, so storage events don't
   apply. Changes propagate on next /me fetch (app launch or after TTL).
+
+
+- Launcher stack: Vite + React + TypeScript + Tailwind. SPA, not SSR.
+  React Router for routes. No state library, no UI library, no animation
+  library in v0. Designed pass replaces placeholders later.
+- Launcher does not gate on entitlements — works for any authenticated
+  user. Entitlements drive which apps appear in the grid, not launcher access.
+- Profile deselect endpoint added to API to support "switch profile" from
+  kid mode without requiring parent re-auth. Kid mode tile is a modal
+  confirmation, not a hidden action.
