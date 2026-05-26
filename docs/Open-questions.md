@@ -33,6 +33,21 @@ decisions.md.
 - Confirm domain layout: launcher at rumpusroom.app root vs
   app.rumpusroom.app subdomain. Affects DNS, marketing site location,
   cookie scope verification.
+- Production auth redirect coupling. The API reuses one APP_BASE_URL for
+  both the magic-link consume URL and the post-consume redirect. In dev a
+  Vite proxy hides this (one origin). In prod the consume link must resolve
+  to the API while the redirect lands on the launcher — they're different
+  subdomains. Needs a deployment decision: split into two env vars
+  (API_PUBLIC_URL + LAUNCHER_URL), or front /auth/consume on the launcher
+  domain. Small API change either way; flagged before the first deploy.
+
+## Design / content (surfaced in the launcher build)
+- Avatar set: 12 animals designed (ids 0–11); the API reserves 0–19. Either
+  design 8 more or relax validation to 0–11. Launcher falls back to the Fox
+  for unknown ids meanwhile, so it's not blocking.
+- App display names: 4 of 6 are working titles (Flip Studio, Echo, Funny
+  Face, Dinner Vote). Slugs are the contract; names need founder sign-off.
+  Mr Know-it-all and Kaleidoscope are confirmed.
 
 ## Strategic / later
 - When (not whether) to publicly open app requests from subscribers.

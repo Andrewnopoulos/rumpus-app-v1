@@ -84,3 +84,33 @@ Append-only. One line of rationale per decision.
 - Profile deselect endpoint added to API to support "switch profile" from
   kid mode without requiring parent re-auth. Kid mode tile is a modal
   confirmation, not a hidden action.
+
+
+## 2026-05 (launcher build)
+
+- /profiles/deselect requires no elevation. Leaving kid mode is not a
+  sensitive action; gating it would strand a kid behind an email link.
+  Guard is "must be in kid mode" (the inverse of the parent-mode guard).
+- Dev wiring is a Vite same-origin proxy, not direct cross-origin. The API
+  reuses one APP_BASE_URL for both the magic-link URL and the post-consume
+  redirect; proxying /auth /me /profiles /health from the launcher onto the
+  API keeps the whole sign-in round trip on one origin with zero API auth
+  change. auth-client uses an empty apiBase in dev. (Prod coupling deferred —
+  see open questions.)
+- CORS added to the API regardless: credentialed, origin-reflected, never
+  `*` (allow-credentials forbids wildcard). Allowlist localhost:5173 (dev)
+  and rumpusroom.app (prod). Exercised only in production, where launcher and
+  API are different subdomains.
+- Launcher styling ports the locked design's own CSS (tokens + component
+  classes from theme.css) into the production stylesheet. Tailwind is wired
+  (oklch vars → colour utilities) and available, but the design classes carry
+  the locked look — guarantees fidelity and keeps palette switching a single
+  `data-palette` attribute swap, vs re-deriving every component as utilities.
+- Default palette is Clay, switchable via one constant in App.tsx. Dark mode
+  (data-dark) is defined for parent screens but not toggled in v0.
+- Parent dashboard fetches GET /profiles for the richer profile rows
+  (age_band, created_at); /me's parent-mode profiles carry only id/name/
+  avatar. Falls back to the /me profiles if that call fails.
+- Entitlement filtering is client-side in the app grid: the launcher renders
+  the static app catalogue filtered by /me's apps_unlocked. Server stays the
+  source of truth; the catalogue (names, icons, launch URLs) is launcher data.
