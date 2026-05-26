@@ -41,3 +41,4 @@ How I want Claude to work with me:
 - When I'm reaching for a platform-first solution, check if a product-first one works
 - Flag risks early; I'd rather hear bad news at week 2 than week 20
 - Keep formatting light; prose over bullets unless bullets actually help
+- draft an update to STATUS.md based on the instructions in META-STATUS.md after finishing each significant chunk of work
