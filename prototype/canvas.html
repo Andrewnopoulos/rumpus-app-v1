@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RumpusRoom — Design canvas</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+<style>
+  html, body { margin: 0; padding: 0; background: #f6f4ef; font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; }
+  iframe.preview {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+    background: transparent;
+  }
+  .ab-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #eee;
+  }
+  .ab-tag {
+    position: absolute; top: 12px; left: 12px; z-index: 2;
+    padding: 4px 10px; border-radius: 999px;
+    background: rgba(255,255,255,.84);
+    backdrop-filter: blur(8px);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+    color: #29261b;
+    border: 0.5px solid rgba(0,0,0,.08);
+    box-shadow: 0 1px 2px rgba(0,0,0,.06);
+  }
+  /* canvas page title block */
+  .doc-head {
+    padding: 48px 56px 24px;
+    max-width: 980px;
+  }
+  .doc-head h1 {
+    font-family: "Instrument Serif", Georgia, serif;
+    font-weight: 400;
+    font-size: 56px;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: #29261b;
+    margin: 0 0 12px;
+  }
+  .doc-head h1 em { font-style: italic; opacity: 0.85; }
+  .doc-head p { color: #6b6557; font-size: 16px; line-height: 1.5; margin: 0 0 8px; max-width: 720px; }
+  .doc-head .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #8c8473;
+    margin-bottom: 16px;
+  }
+  .doc-head .dot { width: 8px; height: 8px; border-radius: 50%; background: #c97a4a; }
+  .doc-head .notes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+  .doc-head .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 11px; border-radius: 999px;
+    background: #fff; color: #29261b;
+    font-size: 12px; font-weight: 600;
+    border: 0.5px solid rgba(0,0,0,.08);
+  }
+</style>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="launcher/design-canvas.jsx"></script>
+  <script type="text/babel">
+    function Preview({ palette = "clay", dark = false, route = "profiles", sub = "active", profiles = 3, tag }) {
+      const params = new URLSearchParams({
+        embedded: "1",
+        palette,
+        dark: String(dark),
+        route,
+        sub,
+        profiles: String(profiles),
+      });
+      return (
+        <div className="ab-frame">
+          {tag && <div className="ab-tag">{tag}</div>}
+          <iframe className="preview" src={`launcher.html?${params.toString()}`} title={tag || route} />
+        </div>
+      );
+    }
+
+    function Canvas() {
+      return (
+        <React.Fragment>
+          <div className="doc-head">
+            <div className="eyebrow"><span className="dot" /> Design canvas — variants</div>
+            <h1>One launcher, four <em>moods</em>.</h1>
+            <p>
+              Same prototype, same components — only the palette changes. The system is built on oklch tokens so
+              swapping <code>data-palette</code> on <code>&lt;html&gt;</code> shifts every surface together. Compare
+              side-by-side, then pick the direction (or remix two).
+            </p>
+            <div className="notes">
+              <span className="chip">Clay — default warm, terracotta + cream</span>
+              <span className="chip">Sea — cool, cornflower + paper</span>
+              <span className="chip">Sage — muted, mossy + bone</span>
+              <span className="chip">Sunday — saturated, persimmon + butter</span>
+            </div>
+          </div>
+
+          <DesignCanvas minScale={0.25} maxScale={1}>
+
+            <DCSection id="picker" title="Profile picker — palette tour"
+                       subtitle="Most-seen screen in parent mode. Same composition, four moods.">
+              <DCArtboard id="picker-clay"   label="Clay (default)"  width={1280} height={880}>
+                <Preview palette="clay"   route="profiles" tag="Clay" />
+              </DCArtboard>
+              <DCArtboard id="picker-sea"    label="Sea"             width={1280} height={880}>
+                <Preview palette="sea"    route="profiles" tag="Sea" />
+              </DCArtboard>
+              <DCArtboard id="picker-sage"   label="Sage"            width={1280} height={880}>
+                <Preview palette="sage"   route="profiles" tag="Sage" />
+              </DCArtboard>
+              <DCArtboard id="picker-sunday" label="Sunday"          width={1280} height={880}>
+                <Preview palette="sunday" route="profiles" tag="Sunday" />
+              </DCArtboard>
+            </DCSection>
+
+            <DCSection id="kid" title="Kid app grid — palette tour"
+                       subtitle="Where kids spend their time. Color leads on the app tiles; the chrome stays calm.">
+              <DCArtboard id="kid-clay"   label="Clay"   width={1280} height={880}>
+                <Preview palette="clay"   route="apps" tag="Clay" />
+              </DCArtboard>
+              <DCArtboard id="kid-sea"    label="Sea"    width={1280} height={880}>
+                <Preview palette="sea"    route="apps" tag="Sea" />
+              </DCArtboard>
+              <DCArtboard id="kid-sage"   label="Sage"   width={1280} height={880}>
+                <Preview palette="sage"   route="apps" tag="Sage" />
+              </DCArtboard>
+              <DCArtboard id="kid-sunday" label="Sunday" width={1280} height={880}>
+                <Preview palette="sunday" route="apps" tag="Sunday" />
+              </DCArtboard>
+            </DCSection>
+
+            <DCSection id="dash" title="Parent dashboard"
+                       subtitle="Trust-software territory. Light Clay versus a parent-only dark mode.">
+              <DCArtboard id="dash-clay-light" label="Clay — light"  width={1280} height={1440}>
+                <Preview palette="clay" dark={false} route="dashboard" tag="Clay · light" />
+              </DCArtboard>
+              <DCArtboard id="dash-clay-dark"  label="Clay — dark"   width={1280} height={1440}>
+                <Preview palette="clay" dark={true}  route="dashboard" tag="Clay · dark" />
+              </DCArtboard>
+              <DCArtboard id="dash-sage-light" label="Sage — light"  width={1280} height={1440}>
+                <Preview palette="sage" dark={false} route="dashboard" tag="Sage · light" />
+              </DCArtboard>
+            </DCSection>
+
+            <DCSection id="onboard" title="Sign-in & sent"
+                       subtitle="First impression. Calm, warm, no salesy gradient — just the warm wash and a calm card.">
+              <DCArtboard id="signin-clay" label="Sign in"      width={1280} height={880}>
+                <Preview palette="clay" route="signin" tag="Sign in · Clay" />
+              </DCArtboard>
+              <DCArtboard id="signin-sea"  label="Sign in (Sea)" width={1280} height={880}>
+                <Preview palette="sea"  route="signin" tag="Sign in · Sea" />
+              </DCArtboard>
+              <DCArtboard id="sent-clay"   label="Check your email" width={1280} height={880}>
+                <Preview palette="clay" route="sent" tag="Sent" />
+              </DCArtboard>
+            </DCSection>
+
+            <DCSection id="locked" title="Locked — kid-app fallback"
+                       subtitle="When a kid PWA bounces back here. App context preserved at top.">
+              <DCArtboard id="locked-mrknow" label="From Mr Know-it-all" width={1280} height={880}>
+                <Preview palette="clay" route="locked" tag="Locked · from Mr Know-it-all" />
+              </DCArtboard>
+              <DCArtboard id="locked-sage"   label="Sage palette"        width={1280} height={880}>
+                <Preview palette="sage" route="locked" tag="Locked · Sage" />
+              </DCArtboard>
+            </DCSection>
+
+            <DCSection id="trial" title="Subscription states"
+                       subtitle="Dashboard adapts to status. Trial leans optimistic; none nudges to subscribe.">
+              <DCArtboard id="trial-state" label="Trialing"  width={1280} height={1440}>
+                <Preview palette="clay" route="dashboard" sub="trialing" tag="Status · Trialing" />
+              </DCArtboard>
+              <DCArtboard id="none-state" label="No subscription"  width={1280} height={1440}>
+                <Preview palette="clay" route="dashboard" sub="none" tag="Status · None" />
+              </DCArtboard>
+            </DCSection>
+
+          </DesignCanvas>
+        </React.Fragment>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<Canvas />);
+  </script>
+</body>
+</html>
