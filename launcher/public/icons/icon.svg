@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#6366f1" />
+  <!-- arched doorway mark (placeholder brand), scaled into a safe zone -->
+  <g transform="translate(116 116) scale(12.7)">
+    <path d="M2 21 V11 a9 9 0 0 1 18 0 V21 Z" fill="#f8fafc" />
+    <circle cx="15" cy="14" r="1.4" fill="#6366f1" />
+  </g>
+</svg>

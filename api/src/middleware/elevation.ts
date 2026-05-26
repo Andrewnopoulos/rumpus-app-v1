@@ -2,6 +2,8 @@
 //
 //   requireParentMode — rejects if there's no session, or it's in kid mode
 //                       (active_profile set). Device-trusted parent is fine.
+//   requireKidMode    — rejects if there's no session, or it's in parent mode
+//                       (no active_profile). The inverse of requireParentMode.
 //   requireElevated   — requires parent mode AND elevated_until in the future.
 //
 // Each returns an error Response to send, or null when the session passes.
@@ -16,6 +18,16 @@ export function requireParentMode(session: SessionRecord | null): Response | nul
   }
   if (session.active_profile) {
     return errorResponse(403, "parent_mode_required", "This action requires parent mode.");
+  }
+  return null;
+}
+
+export function requireKidMode(session: SessionRecord | null): Response | null {
+  if (!session) {
+    return errorResponse(401, "unauthenticated", "Sign in required.");
+  }
+  if (!session.active_profile) {
+    return errorResponse(403, "kid_mode_required", "This action requires kid mode.");
   }
   return null;
 }

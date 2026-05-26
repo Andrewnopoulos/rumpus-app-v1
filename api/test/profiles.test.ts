@@ -110,3 +110,56 @@ describe("POST /profiles/:id/select", () => {
     expect(res.status).toBe(404);
   });
 });
+
+describe("POST /profiles/deselect", () => {
+  it("returns a kid-mode session to parent mode", async () => {
+    const { parentId } = await seedParent();
+    const { cookie } = await seedSession(parentId);
+    const created = (await (
+      await createProfile(cookie, { display_name: "Kid", avatar_id: 5 })
+    ).json()) as any;
+    await post(`/profiles/${created.id}/select`, {}, cookie);
+
+    const res = await post("/profiles/deselect", {}, cookie);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as any;
+    expect(body).toEqual({ ok: true, mode: "parent" });
+
+    // /me now reports parent mode again.
+    const me = (await (await SELF.fetch(`${BASE}/me`, { headers: { cookie } })).json()) as any;
+    expect(me.mode).toBe("parent");
+  });
+
+  it("403s when already in parent mode", async () => {
+    const { parentId } = await seedParent();
+    const { cookie } = await seedSession(parentId);
+    const res = await post("/profiles/deselect", {}, cookie);
+    expect(res.status).toBe(403);
+    const body = (await res.json()) as any;
+    expect(body.error.code).toBe("kid_mode_required");
+  });
+
+  it("401s when unauthenticated", async () => {
+    const res = await post("/profiles/deselect", {});
+    expect(res.status).toBe(401);
+  });
+});
+
+describe("CORS", () => {
+  it("reflects an allowed origin with credentials on a preflight", async () => {
+    const res = await SELF.fetch(`${BASE}/me`, {
+      method: "OPTIONS",
+      headers: { Origin: "http://localhost:5173" },
+    });
+    expect(res.status).toBe(204);
+    expect(res.headers.get("Access-Control-Allow-Origin")).toBe("http://localhost:5173");
+    expect(res.headers.get("Access-Control-Allow-Credentials")).toBe("true");
+  });
+
+  it("does not reflect a disallowed origin", async () => {
+    const res = await SELF.fetch(`${BASE}/me`, {
+      headers: { Origin: "https://evil.example.com" },
+    });
+    expect(res.headers.get("Access-Control-Allow-Origin")).toBeNull();
+  });
+});

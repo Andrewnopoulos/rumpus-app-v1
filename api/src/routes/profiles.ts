@@ -2,7 +2,7 @@ import type { Ctx } from "../index";
 import { errorResponse, json, readJsonBody } from "../lib/responses";
 import { nowSec } from "../lib/time";
 import { ulid } from "../lib/ulid";
-import { requireParentMode } from "../middleware/elevation";
+import { requireKidMode, requireParentMode } from "../middleware/elevation";
 import { writeKvSession } from "../middleware/session";
 
 const AVATAR_MIN = 0;
@@ -182,4 +182,30 @@ export async function selectProfile(c: Ctx, profileId: string): Promise<Response
   });
 
   return json({ ok: true, mode: "kid", active_profile: profileId });
+}
+
+/**
+ * POST /profiles/deselect
+ * Drops the active kid profile, returning the session to parent mode. Kid mode
+ * required. No elevation needed — exiting kid mode is not a sensitive action.
+ */
+export async function deselectProfile(c: Ctx): Promise<Response> {
+  const guard = requireKidMode(c.session);
+  if (guard) return guard;
+  const session = c.session!;
+
+  const now = nowSec();
+  await c.env.DB.prepare(
+    "UPDATE sessions SET active_profile = NULL, elevated_until = NULL, last_seen_at = ? WHERE id = ?",
+  )
+    .bind(now, session.id)
+    .run();
+  await writeKvSession(c.env, {
+    ...session,
+    active_profile: null,
+    elevated_until: null,
+    last_seen_at: now,
+  });
+
+  return json({ ok: true, mode: "parent" });
 }
