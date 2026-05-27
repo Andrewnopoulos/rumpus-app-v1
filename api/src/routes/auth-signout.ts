@@ -10,7 +10,7 @@ import { deleteKvSession } from "../middleware/session";
  * cookie. Idempotent: succeeds even with no active session.
  */
 export async function signout(c: Ctx): Promise<Response> {
-  const clear = buildClearCookie({ local: c.local });
+  const clear = buildClearCookie({ local: c.local, domain: c.env.COOKIE_DOMAIN });
   const session = c.session;
   if (session) {
     await c.env.DB.prepare("UPDATE sessions SET revoked_at = ? WHERE id = ?")

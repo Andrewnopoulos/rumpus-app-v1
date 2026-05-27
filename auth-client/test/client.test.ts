@@ -267,6 +267,20 @@ describe("resilience", () => {
     );
   });
 
+  it("redirectToLauncher honors a custom launcherBase (e.g. staging)", () => {
+    const assign = vi.fn();
+    vi.spyOn(window.location, "assign").mockImplementation(assign);
+    const client = new RumpusClient({
+      appSlug: APP,
+      apiBase: API_BASE,
+      launcherBase: "https://staging.rumpusroom.app",
+    });
+    client.redirectToLauncher("unauthenticated");
+    expect(assign).toHaveBeenCalledWith(
+      "https://staging.rumpusroom.app/?from=kaleidoscope-camera&reason=unauthenticated",
+    );
+  });
+
   it("throws if appSlug is missing", () => {
     // @ts-expect-error intentionally omitting required appSlug
     expect(() => new RumpusClient({})).toThrow(/appSlug/);

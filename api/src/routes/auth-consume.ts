@@ -83,7 +83,10 @@ export async function consume(c: Ctx): Promise<Response> {
       .run();
 
     const signed = await signValue(session.id, c.secret);
-    const cookie = buildSessionCookie(signed, SESSION_TTL, { local: c.local });
+    const cookie = buildSessionCookie(signed, SESSION_TTL, {
+      local: c.local,
+      domain: c.env.COOKIE_DOMAIN,
+    });
     return redirectToApp(c, cookie);
   }
 

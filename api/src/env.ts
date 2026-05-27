@@ -13,4 +13,10 @@ export interface Env {
   API_BASE_URL: string;
   /** Origin of the launcher; the post-consume redirect target. */
   LAUNCHER_BASE_URL: string;
+  /**
+   * Cookie Domain for the session cookie on non-local deploys, e.g.
+   * `.rumpusroom.app` (prod) or `.staging.rumpusroom.app` (isolated staging).
+   * Optional; defaults to `.rumpusroom.app` when unset.
+   */
+  COOKIE_DOMAIN?: string;
 }

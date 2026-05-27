@@ -124,3 +124,34 @@ Append-only. One line of rationale per decision.
   point at the launcher origin (the Vite proxy keeps one origin). Resolves the
   "production auth redirect coupling" open question; prerequisite for the
   Stripe/deployment session.
+
+
+## 2026-05 (staging stand-up + Kaleidoscope pilot)
+
+- First deployment goes to an isolated staging environment under
+  *.staging.rumpusroom.app, not the production apex. Lets us prove the
+  cross-subdomain session on real subdomains without claiming the apex or
+  risking prod/staging cookie collisions. Mirrors knowitall2's staging/prod
+  split.
+- Cookie Domain is env-driven via a new COOKIE_DOMAIN var (default
+  `.rumpusroom.app`); staging sets `.staging.rumpusroom.app`. A staging session
+  cookie is therefore never sent to the future prod apex. Was hardcoded; one
+  optional env var keeps prod behaviour unchanged.
+- auth-client gains a `launcherBase` config (default `https://rumpusroom.app`),
+  parallel to `apiBase`. The kid PWA's redirectToLauncher must target the
+  staging launcher; the launcher URL was the one hardcoded value blocking a
+  non-prod environment.
+- API CORS switched from an exact-match allowlist to an https `.rumpusroom.app`
+  suffix match (plus localhost:5173). One rule covers the launcher, every kid
+  PWA subdomain, and both staging and prod, while still rejecting look-alikes;
+  credentials forbid a `*` origin.
+- Kaleidoscope's auth gate is env-aware by hostname (staging vs prod vs
+  localhost) rather than build-time config, because colliderscope is buildless.
+  localhost skips the gate to run standalone in dev.
+- Static frontends (launcher, Kaleidoscope) deploy to Cloudflare Pages; API to
+  a Worker. Worker custom domains auto-provision DNS+cert; Pages custom domains
+  need a CNAME the deploy token couldn't create, so the account API token was
+  granted Zone:DNS:Write on rumpusroom.app/.org.
+- Entitlement for the pilot is driven by a `family_app_overrides` comped row,
+  not a faked Stripe subscription — `/me` adds comped slugs even with no sub, so
+  no dummy stripe_customer_id is needed.

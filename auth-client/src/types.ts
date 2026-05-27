@@ -70,6 +70,12 @@ export type RedirectReason = "locked" | "unauthenticated" | "expired";
 export interface RumpusClientConfig {
   /** API origin. Default 'https://api.rumpusroom.app'. */
   apiBase?: string;
+  /**
+   * Launcher origin that redirectToLauncher() navigates to.
+   * Default 'https://rumpusroom.app'. Set this for non-prod environments
+   * (e.g. 'https://staging.rumpusroom.app').
+   */
+  launcherBase?: string;
   /** This PWA's slug, e.g. 'kaleidoscope-camera'. Required. */
   appSlug: string;
   /** Seconds a cached /me response is served without a network call. Default 60. */

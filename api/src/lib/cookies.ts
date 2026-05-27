@@ -53,9 +53,17 @@ export async function verifyValue(signed: string, secret: string): Promise<strin
   return diff === 0 ? value : null;
 }
 
+/** Default cookie Domain when none is configured (production). */
+const DEFAULT_COOKIE_DOMAIN = ".rumpusroom.app";
+
 interface CookieOpts {
   /** Local dev: omit Domain and Secure so the cookie works on localhost. */
   local: boolean;
+  /**
+   * Cookie Domain for non-local deploys. Defaults to `.rumpusroom.app`.
+   * Set to `.staging.rumpusroom.app` to scope sessions to a staging env.
+   */
+  domain?: string;
 }
 
 /** Build a Set-Cookie header that establishes the session. */
@@ -72,7 +80,7 @@ export function buildSessionCookie(
     `Max-Age=${maxAgeSec}`,
   ];
   if (!opts.local) {
-    parts.push("Domain=.rumpusroom.app", "Secure");
+    parts.push(`Domain=${opts.domain ?? DEFAULT_COOKIE_DOMAIN}`, "Secure");
   }
   return parts.join("; ");
 }
@@ -81,7 +89,7 @@ export function buildSessionCookie(
 export function buildClearCookie(opts: CookieOpts): string {
   const parts = [`${COOKIE_NAME}=`, "Path=/", "HttpOnly", "SameSite=Lax", "Max-Age=0"];
   if (!opts.local) {
-    parts.push("Domain=.rumpusroom.app", "Secure");
+    parts.push(`Domain=${opts.domain ?? DEFAULT_COOKIE_DOMAIN}`, "Secure");
   }
   return parts.join("; ");
 }

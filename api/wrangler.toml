@@ -20,3 +20,35 @@ id = "local-dev-placeholder"
 
 # SESSION_SECRET is provided via .dev.vars locally and `wrangler secret put`
 # in production. Do not commit a real secret here.
+
+# ── Isolated staging environment ──────────────────────────────────────────
+# Deployed with `wrangler deploy --env staging`. Lives entirely under
+# *.staging.rumpusroom.app with its own D1, KV, and cookie scope, so staging
+# sessions never reach the (future) production apex. The top-level config
+# above is left with placeholder IDs on purpose — `wrangler dev` uses local
+# simulated D1/KV regardless, and a bare `wrangler deploy` (no --env) is meant
+# to fail rather than touch prod by accident.
+[env.staging]
+name = "rumpusroom-api-staging"
+
+[env.staging.vars]
+API_BASE_URL = "https://api.staging.rumpusroom.app"
+LAUNCHER_BASE_URL = "https://staging.rumpusroom.app"
+COOKIE_DOMAIN = ".staging.rumpusroom.app"
+
+[[env.staging.routes]]
+pattern = "api.staging.rumpusroom.app"
+custom_domain = true
+
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "rumpusroom-staging"
+database_id = "97c28036-bd30-4398-b195-0fb33e790d1e"
+migrations_dir = "migrations"
+
+[[env.staging.kv_namespaces]]
+binding = "SESSIONS"
+id = "691e223e0ea0467f89fd7bdaf1b27663"
+
+[env.staging.observability]
+enabled = true

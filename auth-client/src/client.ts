@@ -19,7 +19,7 @@ import type {
 } from "./types";
 
 const DEFAULT_API_BASE = "https://api.rumpusroom.app";
-const LAUNCHER_URL = "https://rumpusroom.app/";
+const DEFAULT_LAUNCHER_BASE = "https://rumpusroom.app";
 const DEFAULT_TTL_SECONDS = 60;
 
 function nowSeconds(): number {
@@ -51,6 +51,7 @@ function sameResponse(a: MeResponse | null, b: MeResponse | null): boolean {
 export class RumpusClient {
   readonly appSlug: string;
   private readonly apiBase: string;
+  private readonly launcherBase: string;
   private readonly ttlSeconds: number;
   private readonly allowStaleFallback: boolean;
   private readonly store = new SessionStore();
@@ -64,6 +65,7 @@ export class RumpusClient {
     }
     this.appSlug = config.appSlug;
     this.apiBase = (config.apiBase ?? DEFAULT_API_BASE).replace(/\/+$/, "");
+    this.launcherBase = (config.launcherBase ?? DEFAULT_LAUNCHER_BASE).replace(/\/+$/, "");
     this.ttlSeconds = config.cacheTTLSeconds ?? DEFAULT_TTL_SECONDS;
     this.allowStaleFallback = config.allowStaleFallback ?? true;
 
@@ -112,7 +114,7 @@ export class RumpusClient {
   redirectToLauncher(reason?: RedirectReason): void {
     const params = new URLSearchParams({ from: this.appSlug });
     if (reason) params.set("reason", reason);
-    const url = `${LAUNCHER_URL}?${params.toString()}`;
+    const url = `${this.launcherBase}/?${params.toString()}`;
     if (typeof window !== "undefined" && window.location) {
       window.location.assign(url);
     }

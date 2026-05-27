@@ -35,18 +35,34 @@ function isLocal(url: URL): boolean {
   return LOCAL_HOSTS.has(url.hostname) || url.hostname.endsWith(".localhost");
 }
 
-// Browser origins allowed to call the API with credentials. Cross-origin only
-// matters when the launcher calls the API directly (production subdomains, or
-// dev without a same-origin proxy). Origin is reflected, never wildcarded —
+// Browser origins allowed to call the API with credentials. Cross-origin
+// matters when the launcher OR a kid PWA calls the API directly: in production
+// each lives on its own `*.rumpusroom.app` subdomain, a distinct origin from
+// `api.rumpusroom.app`. Origin is reflected, never wildcarded —
 // `Access-Control-Allow-Credentials: true` forbids `*`.
-const ALLOWED_ORIGINS = new Set([
-  "http://localhost:5173", // launcher dev server
-  "https://rumpusroom.app", // launcher production
-]);
+const LAUNCHER_DEV_ORIGIN = "http://localhost:5173";
+
+/**
+ * True for the launcher dev server and any `https://*.rumpusroom.app` origin
+ * (apex included). The hostname check uses an exact match or a `.rumpusroom.app`
+ * suffix so look-alikes like `evilrumpusroom.app` or `rumpusroom.app.evil.com`
+ * are rejected, and only https is accepted for the real domain.
+ */
+function isAllowedOrigin(origin: string): boolean {
+  if (origin === LAUNCHER_DEV_ORIGIN) return true;
+  let u: URL;
+  try {
+    u = new URL(origin);
+  } catch {
+    return false;
+  }
+  if (u.protocol !== "https:") return false;
+  return u.hostname === "rumpusroom.app" || u.hostname.endsWith(".rumpusroom.app");
+}
 
 function corsHeadersFor(req: Request): Record<string, string> {
   const origin = req.headers.get("Origin");
-  if (!origin || !ALLOWED_ORIGINS.has(origin)) return {};
+  if (!origin || !isAllowedOrigin(origin)) return {};
   return {
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Credentials": "true",
