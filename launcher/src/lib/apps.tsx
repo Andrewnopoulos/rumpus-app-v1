@@ -91,3 +91,27 @@ export const APPS: AppEntry[] = [
 ];
 
 export const APP_BY_SLUG: Record<string, AppEntry> = Object.fromEntries(APPS.map((a) => [a.slug, a]));
+
+/**
+ * Resolve an app's launch URL for the environment the launcher is running in.
+ * The same bundle is served on staging and prod, so we derive the kid-app
+ * origin from the launcher's own hostname rather than baking it in at build
+ * time: on a `*.staging.rumpusroom.app` launcher, a prod kid-app host like
+ * `kaleidoscope.rumpusroom.app` is rewritten to `kaleidoscope.staging.rumpusroom.app`.
+ * On prod (or localhost) the authored prod URL is returned unchanged.
+ */
+export function resolveLaunchUrl(launchUrl: string): string {
+  if (typeof window === "undefined") return launchUrl;
+  const host = window.location.hostname;
+  const onStaging = host === "staging.rumpusroom.app" || host.endsWith(".staging.rumpusroom.app");
+  if (!onStaging) return launchUrl;
+  try {
+    const u = new URL(launchUrl);
+    if (u.hostname.endsWith(".rumpusroom.app") && !u.hostname.endsWith(".staging.rumpusroom.app")) {
+      u.hostname = u.hostname.replace(/\.rumpusroom\.app$/, ".staging.rumpusroom.app");
+    }
+    return u.toString();
+  } catch {
+    return launchUrl;
+  }
+}

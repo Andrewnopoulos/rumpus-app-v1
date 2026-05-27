@@ -22,6 +22,10 @@ PWA can redirect to the staging launcher; its IIFE build is vendored into
 Kaleidoscope.
 
 The launcher is live at `staging.rumpusroom.app`, built against the staging API.
+Its app-tile launch URLs are env-aware: on a staging host they rewrite the
+authored prod kid-app origin to its `.staging.rumpusroom.app` equivalent at
+runtime, so the same bundle serves staging and prod and the launcher→app
+click-through works on staging.
 Kaleidoscope (`colliderscope`) is retrofitted with an env-aware boot gate and
 live at `kaleidoscope.staging.rumpusroom.app`; the deployed HTML carries the
 gate, and its service-worker cache was bumped so the gated shell wins.
@@ -37,14 +41,13 @@ headlessly; a signed-in demo family is seeded for a human click-through.
 
 ### Next up
 
-Either roll the auth-client retrofit to the next kid PWA, or make the launcher's
-app-tile launch URLs env-aware so a full launcher→app click-through works on
-staging (they are currently hardcoded to prod subdomains).
+Roll the auth-client retrofit to the next kid PWA (the harder ones — Mr
+Know-it-all has its own auth model; the three React-template apps share one
+shape). Each newly retrofitted app just needs its `.staging.rumpusroom.app`
+subdomain stood up and a comped override to test.
 
 ### Known issues / debts
 
-- Launcher app-tile `launchUrl`s are hardcoded to prod subdomains, so staging
-  tiles point at nonexistent prod URLs. Direct-visit the staging app URL to test.
 - Email is a console stub; production sign-in means reading the link from
   `wrangler tail`.
 - No Stripe; entitlement is driven by manual comped overrides / subscription rows.

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { KidProfile } from "@rumpusroom/auth-client";
 import { useSession } from "../auth/useSession";
-import { APPS, type AppEntry } from "../lib/apps";
+import { APPS, resolveLaunchUrl, type AppEntry } from "../lib/apps";
 import { Avatar } from "../lib/avatars";
 import { SwitchProfileModal } from "../components/SwitchProfileModal";
 import { IconArrowRight, Wordmark } from "../components/icons";
@@ -19,7 +19,7 @@ export function AppGrid() {
   const apps: AppEntry[] = APPS.filter((a) => unlocked.includes(a.slug));
 
   function launch(app: AppEntry) {
-    window.location.assign(app.launchUrl);
+    window.location.assign(resolveLaunchUrl(app.launchUrl));
   }
 
   async function confirmAdult() {

@@ -155,3 +155,7 @@ Append-only. One line of rationale per decision.
 - Entitlement for the pilot is driven by a `family_app_overrides` comped row,
   not a faked Stripe subscription — `/me` adds comped slugs even with no sub, so
   no dummy stripe_customer_id is needed.
+- Launcher app-tile launch URLs are env-resolved at runtime by rewriting the
+  authored prod kid-app host to `.staging.rumpusroom.app` when the launcher is
+  itself on a staging host, rather than baking URLs in per build. Same approach
+  as the kid-app gate; keeps one bundle for both environments.
